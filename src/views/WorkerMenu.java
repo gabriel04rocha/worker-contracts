@@ -3,6 +3,7 @@ package views;
 import entities.Department;
 import entities.enums.WorkerLevel;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import repositories.DepartmentRepository;
 import repositories.WorkerRepository;
@@ -38,7 +39,8 @@ public class WorkerMenu {
         case 1:
           String name;
           WorkerLevel level;
-          Department department;
+          Optional<Department> optionalDepartment;
+          Department selectedDepartment = null;
           Double baseSalary;
 
           System.out.println("Digite as seguintes informações do trabalhador:");
@@ -53,15 +55,27 @@ public class WorkerMenu {
           System.out.println("JUNIOR");
           System.out.println();
           System.out.print("Nível (opções acima):");
+          System.out.println();
           level = WorkerLevel.valueOf(sc.next());
 
           List<Department> departmentList = departments.getDepartments();
 
-          for (Department deparment : departmentList) {
-            System.out.println();
-          }
+          do {
+            optionalDepartment = DepartmentMenu.selectDepartments(
+              departmentList
+            );
+            if (optionalDepartment.isEmpty()) {
+              System.out.println(
+                "Departamento não encontrado! Tente novamente"
+              );
+            } else {
+              selectedDepartment = optionalDepartment.get();
+            }
+          } while (selectedDepartment == null);
 
-          System.out.print("Departamento: ");
+          System.out.print("Salário-base: ");
+
+          baseSalary = sc.nextDouble();
 
           break;
         default:
