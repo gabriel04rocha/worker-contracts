@@ -16,8 +16,11 @@ public class DepartmentRepository {
     departments.add(department);
   }
 
-  public List<Department> getDepartments() {
-    return Collections.unmodifiableList(departments);
+  public Optional<List<Department>> getDepartments() {
+    if (departments.size() > 0) {
+      return Optional.of(Collections.unmodifiableList(departments));
+    }
+    return Optional.empty();
   }
 
   public Optional<Department> getDepartmentById(UUID uuid) {

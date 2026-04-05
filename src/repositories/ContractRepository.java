@@ -18,8 +18,11 @@ public class ContractRepository {
     contracts.add(contract);
   }
 
-  public List<HourContract> contracts() {
-    return Collections.unmodifiableList(contracts);
+  public Optional<List<HourContract>> contracts() {
+    if (contracts.size() > 0) {
+      return Optional.of(Collections.unmodifiableList(contracts));
+    }
+    return Optional.empty();
   }
 
   public Optional<HourContract> getContractById(UUID uuid) {

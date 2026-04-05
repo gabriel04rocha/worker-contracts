@@ -16,8 +16,11 @@ public class WorkerRepository {
     workers.add(worker);
   }
 
-  public List<Worker> getWorkers() {
-    return Collections.unmodifiableList(workers);
+  public Optional<List<Worker>> getWorkers() {
+    if (workers.size() > 0) {
+      return Optional.of(Collections.unmodifiableList(workers));
+    }
+    return Optional.empty();
   }
 
   public Optional<Worker> getWorkerById(UUID uuid) {

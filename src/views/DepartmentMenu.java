@@ -29,7 +29,7 @@ public class DepartmentMenu {
 
     System.out.println("Lista de departamentos:");
 
-    for (Department listDepartment : departments.getDepartments()) {
+    for (Department listDepartment : departments.getDepartments().get()) {
       System.out.println(listDepartment.toString());
       System.out.println();
     }

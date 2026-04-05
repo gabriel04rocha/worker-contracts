@@ -16,11 +16,14 @@ public class MainMenu {
 
   private static int option;
 
-  public static void start() {
+  public static void start(
+    WorkerRepository workers,
+    DepartmentRepository departments,
+    ContractRepository contracts
+  ) {
     Scanner sc = new Scanner(System.in);
 
     Integer hours;
-    Worker ownerWorker;
     Double hourlyWage;
     int initialContract;
     String name;
@@ -29,9 +32,6 @@ public class MainMenu {
     Worker worker;
     Department department;
     HourContract contract;
-    WorkerRepository workers;
-    DepartmentRepository departments;
-    ContractRepository contracts = new ContractRepository();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     LocalDate contractDate;
 
