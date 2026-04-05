@@ -2,6 +2,7 @@ package repositories;
 
 import entities.Worker;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class WorkerRepository {
   }
 
   public List<Worker> getWorkers() {
-    return workers;
+    return Collections.unmodifiableList(workers);
   }
 
   public Optional<Worker> getWorkerById(UUID uuid) {

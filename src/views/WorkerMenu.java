@@ -1,6 +1,7 @@
 package views;
 
 import entities.Department;
+import entities.Worker;
 import entities.enums.WorkerLevel;
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +29,9 @@ public class WorkerMenu {
       System.out.println("[3] Alterar um trabalhador");
       System.out.println("[4] Mudar o departamento de um trabalhador");
       System.out.println("[5] Excluir trabalhadores existentes");
-      System.out.println("[6] Voltar para o menu principal");
-      System.out.println("[7] Sair");
+      System.out.println("[6] Ver todos os contratos de um trabalhador");
+      System.out.println("[7] Voltar para o menu principal");
+      System.out.println("[8] Sair");
       System.out.println();
       System.out.print("Sua resposta: ");
 
@@ -41,6 +43,7 @@ public class WorkerMenu {
           WorkerLevel level;
           Optional<Department> optionalDepartment;
           Department selectedDepartment = null;
+          Worker worker;
           Double baseSalary;
 
           System.out.println("Digite as seguintes informações do trabalhador:");
@@ -61,7 +64,7 @@ public class WorkerMenu {
           List<Department> departmentList = departments.getDepartments();
 
           do {
-            optionalDepartment = DepartmentMenu.selectDepartments(
+            optionalDepartment = DepartmentMenu.selectDepartment(
               departmentList
             );
             if (optionalDepartment.isEmpty()) {
@@ -77,12 +80,52 @@ public class WorkerMenu {
 
           baseSalary = sc.nextDouble();
 
+          worker = new Worker(name, level, baseSalary, selectedDepartment);
+
+          workers.addWorker(worker);
+
           break;
+        case 2:
+          System.out.println("Trabalhadores cadastrados no sistema:");
+          System.out.println();
+          for (Worker listWorker : workers.getWorkers()) {
+            System.out.print(listWorker.toString());
+            System.out.println();
+          }
+
+          break;
+        case 3:
         default:
           break;
       }
     } while (option != 5);
 
     sc.close();
+  }
+
+  public static Optional<Worker> selectWorker(List<Worker> workers) {
+    Scanner sc = new Scanner(System.in);
+
+    String selectedWorker;
+
+    System.out.println("Lista de trabalhadores:");
+
+    for (Worker listWorker : workers) {
+      System.out.println(listWorker.toString());
+    }
+
+    System.out.print("Selecione um trabalhador para continuar.");
+
+    selectedWorker = sc.nextLine();
+
+    sc.close();
+
+    for (Department listDepartment : departments) {
+      if (listDepartment.getName() == selectedDepartment) {
+        return Optional.of(listDepartment);
+      }
+    }
+
+    return Optional.empty();
   }
 }

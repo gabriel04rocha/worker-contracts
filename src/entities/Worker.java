@@ -89,4 +89,16 @@ public class Worker {
   public void removeContract(HourContract contract) {
     contracts.remove(contract);
   }
+
+  @Override
+  public String toString() {
+    return String.format(
+      "Trabalhador %s:\nUUID: %s\nNível: %s\nSalário-base: R$%.2f\nDepartamento: %s",
+      name,
+      uuid.toString(),
+      level.toString(),
+      baseSalary,
+      department.getName()
+    );
+  }
 }

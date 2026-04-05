@@ -1,10 +1,14 @@
 package views;
 
-import java.util.Scanner;
-
 import entities.Department;
+import entities.HourContract;
 import entities.Worker;
 import entities.enums.WorkerLevel;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Scanner;
+import repositories.ContractRepository;
 import repositories.DepartmentRepository;
 import repositories.WorkerRepository;
 
@@ -15,20 +19,30 @@ public class MainMenu {
   public static void start() {
     Scanner sc = new Scanner(System.in);
 
+    Integer hours;
+    Worker ownerWorker;
+    Double hourlyWage;
+    int initialContract;
     String name;
     WorkerLevel level;
     Double baseSalary;
     Worker worker;
+    Department department;
+    HourContract contract;
+    WorkerRepository workers;
+    DepartmentRepository departments;
+    ContractRepository contracts = new ContractRepository();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    LocalDate contractDate;
 
-    
     System.out.println(
-        "Para começar a usar o sistema, primeiro cadastre um trabalhador:"
+      "Para começar a usar o sistema, primeiro cadastre um trabalhador:"
     );
-    
+
     System.out.print("Insira o nome do trabalhador: ");
-    
+
     name = sc.nextLine();
-    
+
     System.out.println(
       "Insira o o nível deste trabalhador dentre as opções descritas\n\n[JUNIOR]\n[MID_LEVEL]\n[SENIOR]\n"
     );
@@ -38,150 +52,78 @@ public class MainMenu {
     level = WorkerLevel.valueOf(sc.next());
 
     System.out.print("Insira o departamento deste trabalhador: ");
-    
+
     sc.nextLine();
 
-    Department department = new Department(sc.nextLine());
-    
-    DepartmentRepository departments = new DepartmentRepository(department);
+    department = new Department(sc.nextLine());
+
+    departments = new DepartmentRepository(department);
 
     System.out.print("Insira agora o salário base deste trabalhador: ");
-    
+
     baseSalary = sc.nextDouble();
-    
+
     worker = new Worker(name, level, baseSalary, department);
-    
-    WorkerRepository workers = new WorkerRepository(worker);
-    
-    int option = 0;
+    workers = new WorkerRepository(worker);
+
+    System.out.print("Deseja incluir um contrato para este trabalhador? ");
+    System.out.println();
+    System.out.print("[1] Sim");
+    System.out.print("[2] Não");
+    System.out.println();
+    System.out.print("Sua escolha: ");
+    initialContract = sc.nextInt();
+
+    if (initialContract == 1) {
+      System.out.print("Digite as seguintes informações do contrato:");
+      System.out.println();
+      System.out.print("Data do contrato (DD/MM/AAAA): ");
+
+      contractDate = LocalDate.parse(sc.next(), formatter);
+
+      System.out.print("Valor por hora trabalhada: ");
+
+      hourlyWage = sc.nextDouble();
+
+      System.out.print("Quantidade de horas trabalhadas: ");
+
+      hours = sc.nextInt();
+
+      contract = new HourContract(worker, contractDate, hourlyWage, hours);
+
+      contracts.addContract(contract);
+    }
+
+    option = 0;
 
     do {
-        System.out.println("O que você deseja fazer agora?\n");
-
-        WorkerMenu.start(workers, departments);
-
-        System.out.println("---------------------CONTRATOS---------------------");
-        System.out.println(
-        "\n[6] Cadastrar um novo contrato\n[7] Ver todos os contratos cadastrados\n[8] Editar contratos\n[9] Deletar contratos existentes\n"
-      );
-      System.out.println(
-        "---------------------DEPARTAMENTOS---------------------"
-      );
-      System.out.println(
-        "\n[10] Cadastrar um novo departamento\n[11] Ver todos os departamentos cadastrados\n[12] Editar departamentos\n[13] Deletar departamentos existentes\n[14]Sair\n"
-      );
+      System.out.println("O que você deseja fazer agora?\n");
+      System.out.println();
+      System.out.println("[1] Trabalhadores");
+      System.out.println("[2] Contratos");
+      System.out.println("[3] Departamentos");
+      System.out.println("[4] Sair");
+      System.out.println();
       System.out.print("Sua escolha: ");
 
       option = sc.nextInt();
 
       switch (option) {
         case 1:
-          System.out.print("Insira o nome do trabalhador: ");
-
-          name = sc.nextLine();
-
-          System.out.println(
-            "Insira o o nível deste trabalhador dentre as opções descritas\n\n[JUNIOR]\n[MID_LEVEL]\n[SENIOR]\n"
-          );
-
-          System.out.print("Sua escolha: ");
-
-          level = WorkerLevel.valueOf(sc.next());
-
-          System.out.print("Insira o departamento deste trabalhador: ");
-
-          sc.nextLine();
-
-          department = new Department(sc.nextLine());
-
-          System.out.print("Insira agora o salário base deste trabalhador: ");
-
-          baseSalary = sc.nextDouble();
-
+          WorkerMenu.start(workers, departments);
           break;
         case 2:
-          Worker selectedWorker = null;
-
-          listWorkers(workers);
-
-          System.out.print(
-            "Selecione o trabalhador que deseja alterar inserindo seu nome: "
-          );
-
-          do {
-            name = sc.nextLine();
-
-            for (Worker listWorker : workers) {
-              if (listWorker.getName().equals(name)) {
-                selectedWorker = listWorker;
-              }
-            }
-
-            if (selectedWorker == null) {
-              System.out.print(
-                "Não foi encontrado nenhum trabalhador com este nome. Tente novamente: "
-              );
-            }
-          } while (selectedWorker == null);
-
-          System.out.print(
-            "Qual informação do trabalhador você deseja alterar?\n\n[1] Mudar o nome do trabalhador\n[2] Mudar o salário-base do trabalhador\n[3] Editar contratos (outro menu)\n[4] Mudar o departamento do trabalhador\n\nSua resposta: "
-          );
-
-          innerOption = sc.nextInt();
-
-          switch (innerOption) {
-            case 1:
-              System.out.print("\nDigite o novo nome do trabalhador: ");
-
-              name = sc.nextLine();
-
-              selectedWorker.setName(name);
-
-              break;
-            case 2:
-              System.out.print("\nDigite o novo salário do trabalhador: ");
-
-              baseSalary = sc.nextDouble();
-
-              selectedWorker.setBaseSalary(baseSalary);
-
-              break;
-            case 3:
-              break;
-            default:
-              break;
-          }
-
+          ContractMenu.start(contracts);
           break;
         case 3:
-          break;
-        case 4:
-          break;
-        case 5:
-          break;
-        case 6:
-          break;
-        case 7:
-          break;
-        case 8:
-          break;
-        case 9:
-          break;
-        case 10:
-          break;
-        case 11:
-          break;
-        case 12:
-          break;
-        case 13:
+          DepartmentMenu.start(departments);
           break;
         default:
+          System.out.print("Opção inválida! Tente novamente:");
           break;
       }
-    } while (option != 9);
+    } while (!(option < 5) && !(option > 1));
 
     sc.close();
   }
-  } 
 }

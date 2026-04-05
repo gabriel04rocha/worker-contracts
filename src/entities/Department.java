@@ -23,4 +23,9 @@ public class Department {
   public void setName(String name) {
     this.name = name;
   }
+
+  @Override
+  public String toString() {
+    return String.format("Departamento %s\nUUID: %s", name, uuid.toString());
+  }
 }

@@ -2,7 +2,9 @@ package repositories;
 
 import entities.Department;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class DepartmentRepository {
@@ -15,7 +17,16 @@ public class DepartmentRepository {
   }
 
   public List<Department> getDepartments() {
-    return departments;
+    return Collections.unmodifiableList(departments);
+  }
+
+  public Optional<Department> getDepartmentById(UUID uuid) {
+    for (Department department : departments) {
+      if (department.getUuid().equals(uuid)) {
+        return Optional.of(department);
+      }
+    }
+    return Optional.empty();
   }
 
   public void addDepartment(Department department) {

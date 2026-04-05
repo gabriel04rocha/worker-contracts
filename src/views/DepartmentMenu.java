@@ -4,34 +4,48 @@ import entities.Department;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.UUID;
+import repositories.DepartmentRepository;
 
 public class DepartmentMenu {
 
-  public static Optional<Department> selectDepartments(
-    List<Department> departments
+  public static void start(DepartmentRepository departments) {
+    System.out.println(
+      "---------------------DEPARTAMENTOS---------------------"
+    );
+    System.out.println(
+      "\n[10] Cadastrar um novo departamento\n[11] Ver todos os departamentos cadastrados\n[12] Editar departamentos\n[13] Deletar departamentos existentes\n[14]Sair\n"
+    );
+  }
+
+  public static Optional<Department> selectDepartment(
+    DepartmentRepository departments
   ) {
     Scanner sc = new Scanner(System.in);
 
-    String selectedDepartment;
+    Optional<Department> selectedDepartment;
+
+    String selectedUuid;
 
     System.out.println("Lista de departamentos:");
 
-    for (Department listDepartment : departments) {
-      System.out.println(listDepartment.getName());
+    for (Department listDepartment : departments.getDepartments()) {
+      System.out.println(listDepartment.toString());
+      System.out.println();
     }
 
-    System.out.print("Selecione um departamento para continuar.");
+    System.out.print(
+      "Selecione um departamento para continuar (Digite o UUID)."
+    );
 
-    selectedDepartment = sc.nextLine();
+    selectedUuid = sc.next();
+
+    selectedDepartment = departments.getDepartmentById(
+      UUID.fromString(selectedUuid)
+    );
 
     sc.close();
 
-    for (Department listDepartment : departments) {
-      if (listDepartment.getName() == selectedDepartment) {
-        return Optional.of(listDepartment);
-      }
-    }
-
-    return Optional.empty();
+    return selectedDepartment;
   }
 }
