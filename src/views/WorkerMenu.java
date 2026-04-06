@@ -39,17 +39,18 @@ public class WorkerMenu {
 
       option = sc.nextInt();
 
+      String name;
+      WorkerLevel level;
+      Optional<Department> optionalDepartment;
+      Optional<Worker> optionalWorker;
+      Department selectedDepartment = null;
+      Worker selectedWorker = null;
+      String departmentName;
+      Worker worker;
+      Double baseSalary;
+
       switch (option) {
         case 1:
-          String name;
-          WorkerLevel level;
-          Optional<Department> optionalDepartment;
-          Department selectedDepartment = null;
-          Worker selectedWorker = null;
-          String departmentName;
-          Worker worker;
-          Double baseSalary;
-
           System.out.println("Digite as seguintes informações do trabalhador:");
           System.out.print("Nome: ");
 
@@ -113,7 +114,28 @@ public class WorkerMenu {
           break;
         case 3:
           do {
-            selectWorker(workers);
+            optionalWorker = selectWorker(workers);
+
+            if (optionalWorker.isEmpty()) {
+              System.out.print("Trabalhador não encontrado! Tente novamente: ");
+            } else {
+              selectedWorker = optionalWorker.get();
+
+              System.out.printf(
+                "Trabalhador selecionado:\n\n%s",
+                selectedWorker.toString()
+              );
+
+              System.out.print(
+                "Qual informação do trabalhador você deseja alterar?"
+              );
+              System.out.println();
+              System.out.println("[1] Nome");
+              System.out.println("[2] Nível");
+              System.out.println("[3] Salário-base");
+              System.out.println("[4] Departamento");
+              System.out.println();
+            }
           } while (selectedWorker == null);
 
           break;
