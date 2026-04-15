@@ -7,7 +7,7 @@ public enum WorkerLevel {
     MID_LEVEL(2),
     SENIOR(3);
 
-    public int MenuInput;
+    public final int menuInput;
 
     WorkerLevel(int menuInput) {
         this.menuInput = menuInput;

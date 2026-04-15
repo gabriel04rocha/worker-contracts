@@ -46,69 +46,21 @@ public class WorkerMenu {
             Optional<WorkerLevel> optionalWorkerLevel;
             Department selectedDepartment = null;
             Worker selectedWorker = null;
+            int innerOption;
             String departmentName;
             Worker worker;
             Double baseSalary;
 
             switch (option) {
                 case 1:
-                    System.out.println("Digite as seguintes informações do trabalhador:");
-                    System.out.print("Nome: ");
-
-                    sc.nextLine();
-                    name = sc.nextLine();
-
-                    System.out.print("Nível (opções abaixo):");
-                    listLevels();
-                    System.out.println();
-                    level = WorkerLevel.valueOf(sc.next());
-
-                    System.out.print(
-                            "Departamento (1) para criar um novo, (2) para selecionar um existente:"
-                    );
-
-                    int innerOption = sc.nextInt();
-
-                    if (innerOption == 1) {
-                        System.out.print("Digite o nome do novo departamento: ");
-
-                        departmentName = sc.nextLine();
-
-                        Department department = new Department(departmentName);
-
-                        departments.addDepartment(department);
-
-                        selectedDepartment = department;
-                    } else if (innerOption == 2) {
-                        do {
-                            optionalDepartment = DepartmentMenu.selectDepartment(departments);
-
-                            if (optionalDepartment.isEmpty()) {
-                                System.out.println(
-                                        "Departamento não encontrado! Tente novamente"
-                                );
-                            } else {
-                                selectedDepartment = optionalDepartment.get();
-                            }
-                        } while (selectedDepartment == null);
-                    }
-
-                    System.out.print("Salário-base: ");
-
-                    baseSalary = sc.nextDouble();
-
-                    worker = new Worker(name, level, baseSalary, selectedDepartment);
-
-                    workers.addWorker(worker);
-
-                    System.out.printf(
-                            "Trabalhador criado com sucesso!\n%s",
-                            worker.toString()
-                    );
-
+                    createWorker(departments, workers);
                     break;
                 case 2:
-                    listWorkers(workers);
+                    if (workers.getWorkers().isPresent()) {
+                        listWorkers(workers);
+                    } else {
+                        System.out.println("Não há trabalhadores cadastrados no sistema!");
+                    }
                     break;
                 case 3:
                     do {
@@ -148,20 +100,34 @@ public class WorkerMenu {
                                     System.out.print(selectedWorker.toString());
                                     break;
                                 case 2:
-                                    System.out.println("Digite o novo nível do trabalhador de acordo com as opções abaixo:\n");
-                                    System.out.println();
-                                    listLevels();
-                                    System.out.println();
-                                    System.out.print("Sua escolha: ");
+                                    do {
+                                        System.out.println("Digite o novo nível do trabalhador de acordo com as opções abaixo:\n");
+                                        System.out.println();
+                                        listLevels();
+                                        System.out.println();
+                                        System.out.print("Sua escolha: ");
 
-                                    optionalWorkerLevel = WorkerLevel.findByIdentifier(sc.nextInt());
+                                        optionalWorkerLevel = WorkerLevel.findByIdentifier(sc.nextInt());
 
-                                    if (optionalWorkerLevel.isPresent()) {
-                                        selectedWorker.setLevel(optionalWorkerLevel.get());
+                                        if (optionalWorkerLevel.isPresent()) {
+                                            selectedWorker.setLevel(optionalWorkerLevel.get());
+                                        } else {
+                                            System.out.println("Opção não identificada! Tente novamente: ");
+                                        }
+                                    } while (optionalWorkerLevel.isPresent());
+                                    break;
+                                case 3:
+                                    System.out.print("Digite o novo salário-base do trabalhador: ");
+                                    System.out.println();
+                                    baseSalary = sc.nextDouble();
+                                    selectedWorker.setBaseSalary(baseSalary);
+                                    break;
+                                case 4:
+                                    if (departments.getDepartments().isPresent()) {
+                                        DepartmentMenu.listDepartments(departments);
                                     } else {
-                                        System.out.println("Opção não identificada!");
-                                    }
 
+                                    }
                                     break;
                                 default:
 
@@ -183,9 +149,11 @@ public class WorkerMenu {
     public static void listWorkers(WorkerRepository workers) {
         System.out.println("Trabalhadores cadastrados no sistema:");
         System.out.println();
-        for (Worker listWorker : workers.getWorkers().get()) {
-            System.out.print(listWorker.toString());
-            System.out.println();
+        if (workers.getWorkers().isPresent()) {
+            for (Worker listWorker : workers.getWorkers().get()) {
+                System.out.print(listWorker.toString());
+                System.out.println();
+            }
         }
     }
 
@@ -193,6 +161,62 @@ public class WorkerMenu {
         for (WorkerLevel level : WorkerLevel.values()) {
             System.out.printf("[%d] %s", level.ordinal() + 1, level.toString());
         }
+    }
+
+    public static Worker createWorker(DepartmentRepository departments, WorkerRepository workers) {
+        Scanner sc = new Scanner(System.in);
+        Department selectedDepartment = null;
+        System.out.println("Digite as seguintes informações do trabalhador:");
+        System.out.print("Nome: ");
+
+        sc.nextLine();
+        String name = sc.nextLine();
+
+        System.out.print("Nível (opções abaixo):");
+        listLevels();
+        System.out.println();
+        WorkerLevel level = WorkerLevel.valueOf(sc.next());
+
+        System.out.println("Departamento:");
+        System.out.println();
+        System.out.println("[1] Criar um novo:");
+        System.out.println("[2] Selecionar um existente:");
+        System.out.println();
+        System.out.println("Sua escolha:");
+
+        innerOption = sc.nextInt();
+
+        if (innerOption == 1) {
+            selectedDepartment = DepartmentMenu.createDepartment(departments);
+        } else if (innerOption == 2) {
+            do {
+                Optional<Department> optionalDepartment = DepartmentMenu.selectDepartment(departments);
+
+                if (optionalDepartment.isEmpty()) {
+                    System.out.println(
+                            "Departamento não encontrado! Tente novamente"
+                    );
+                } else {
+                    selectedDepartment = optionalDepartment.get();
+                }
+            } while (selectedDepartment == null);
+        }
+        System.out.print("Salário-base: ");
+
+        Double baseSalary = sc.nextDouble();
+
+        Worker worker = new Worker(name, level, baseSalary, selectedDepartment);
+
+        workers.addWorker(worker);
+
+        System.out.printf(
+                "Trabalhador criado com sucesso!\n%s",
+                worker.toString()
+        );
+
+        sc.close();
+
+        return worker;
     }
 
     public static Optional<Worker> selectWorker(WorkerRepository workers) {
