@@ -32,12 +32,14 @@ public class DepartmentMenu {
     }
 
     public static void listDepartments(DepartmentRepository departments) {
+        int departmentCounter = 0;
         System.out.println("Departamentos cadastrados no sistema:");
         System.out.println();
         if (departments.getDepartments().isPresent()) {
             for (Department listDepartment : departments.getDepartments().get()) {
-                System.out.print(listDepartment.toString());
+                System.out.printf("[%d] %s",departmentCounter, listDepartment.toString());
                 System.out.println();
+                departmentCounter++;
             }
         }
     }

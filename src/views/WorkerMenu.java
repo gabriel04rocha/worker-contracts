@@ -114,7 +114,7 @@ public class WorkerMenu {
                                         } else {
                                             System.out.println("Opção não identificada! Tente novamente: ");
                                         }
-                                    } while (optionalWorkerLevel.isPresent());
+                                    } while (optionalWorkerLevel.isEmpty());
                                     break;
                                 case 3:
                                     System.out.print("Digite o novo salário-base do trabalhador: ");
@@ -124,9 +124,26 @@ public class WorkerMenu {
                                     break;
                                 case 4:
                                     if (departments.getDepartments().isPresent()) {
-                                        DepartmentMenu.listDepartments(departments);
-                                    } else {
+                                        optionalDepartment = DepartmentMenu.selectDepartment(departments);
 
+                                    } else {
+                                        System.out.println("Não há departamentos cadastrados no sistema!");
+                                        System.out.println("Deseja criar um agora?");
+                                        System.out.println();
+                                        System.out.println("[1] Sim");
+                                        System.out.println("[2] Não");
+                                        System.out.println();
+                                        System.out.println("Sua escolha: ");
+
+                                        innerOption = sc.nextInt();
+
+                                        if (innerOption == 1) {
+                                            selectedDepartment = DepartmentMenu.createDepartment(departments);
+
+                                            selectedWorker.setDepartment(selectedDepartment);
+
+                                            System.out.printf("Novo departamento do trabalhador %s: %s", selectedWorker.getName(), selectedDepartment.getName());
+                                        }
                                     }
                                     break;
                                 default:
