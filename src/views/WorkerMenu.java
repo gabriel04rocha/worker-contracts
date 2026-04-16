@@ -8,11 +8,9 @@ import repositories.WorkerRepository;
 
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class WorkerMenu {
 
-    private static int option;
     private static int innerOption;
 
     public static void start(
@@ -21,6 +19,7 @@ public class WorkerMenu {
     ) {
         Scanner sc = new Scanner(System.in);
 
+        int option;
         do {
             System.out.println(
                     "---------------------TRABALHADORES---------------------"
@@ -29,7 +28,6 @@ public class WorkerMenu {
             System.out.println("[1] Cadastrar um novo trabalhador");
             System.out.println("[2] Ver todos os trabalhadores cadastrados");
             System.out.println("[3] Alterar um trabalhador");
-            System.out.println("[4] Mudar o departamento de um trabalhador");
             System.out.println("[5] Excluir trabalhadores existentes");
             System.out.println("[6] Ver todos os contratos de um trabalhador");
             System.out.println("[7] Voltar para o menu principal");
@@ -38,18 +36,6 @@ public class WorkerMenu {
             System.out.print("Sua resposta: ");
 
             option = sc.nextInt();
-
-            String name;
-            WorkerLevel level;
-            Optional<Department> optionalDepartment;
-            Optional<Worker> optionalWorker;
-            Optional<WorkerLevel> optionalWorkerLevel;
-            Department selectedDepartment = null;
-            Worker selectedWorker = null;
-            int innerOption;
-            String departmentName;
-            Worker worker;
-            Double baseSalary;
 
             switch (option) {
                 case 1:
@@ -63,98 +49,9 @@ public class WorkerMenu {
                     }
                     break;
                 case 3:
-                    do {
-                        optionalWorker = selectWorker(workers);
-
-                        if (optionalWorker.isEmpty()) {
-                            System.out.print("Trabalhador não encontrado! Tente novamente: ");
-                        } else {
-                            selectedWorker = optionalWorker.get();
-
-                            System.out.printf(
-                                    "Trabalhador selecionado:\n\n%s",
-                                    selectedWorker.toString()
-                            );
-
-                            System.out.print(
-                                    "Qual informação do trabalhador você deseja alterar?"
-                            );
-                            System.out.println();
-                            System.out.println("[1] Nome");
-                            System.out.println("[2] Nível");
-                            System.out.println("[3] Salário-base");
-                            System.out.println("[4] Departamento");
-                            System.out.println();
-
-                            innerOption = sc.nextInt();
-
-                            switch (innerOption) {
-                                case 1:
-                                    System.out.print("Digite o novo nome do trabalhador: ");
-
-                                    sc.nextLine();
-                                    name = sc.nextLine();
-
-                                    selectedWorker.setName(name);
-
-                                    System.out.print(selectedWorker.toString());
-                                    break;
-                                case 2:
-                                    do {
-                                        System.out.println("Digite o novo nível do trabalhador de acordo com as opções abaixo:\n");
-                                        System.out.println();
-                                        listLevels();
-                                        System.out.println();
-                                        System.out.print("Sua escolha: ");
-
-                                        optionalWorkerLevel = WorkerLevel.findByIdentifier(sc.nextInt());
-
-                                        if (optionalWorkerLevel.isPresent()) {
-                                            selectedWorker.setLevel(optionalWorkerLevel.get());
-                                        } else {
-                                            System.out.println("Opção não identificada! Tente novamente: ");
-                                        }
-                                    } while (optionalWorkerLevel.isEmpty());
-                                    break;
-                                case 3:
-                                    System.out.print("Digite o novo salário-base do trabalhador: ");
-                                    System.out.println();
-                                    baseSalary = sc.nextDouble();
-                                    selectedWorker.setBaseSalary(baseSalary);
-                                    break;
-                                case 4:
-                                    if (departments.getDepartments().isPresent()) {
-                                        optionalDepartment = DepartmentMenu.selectDepartment(departments);
-
-                                    } else {
-                                        System.out.println("Não há departamentos cadastrados no sistema!");
-                                        System.out.println("Deseja criar um agora?");
-                                        System.out.println();
-                                        System.out.println("[1] Sim");
-                                        System.out.println("[2] Não");
-                                        System.out.println();
-                                        System.out.println("Sua escolha: ");
-
-                                        innerOption = sc.nextInt();
-
-                                        if (innerOption == 1) {
-                                            selectedDepartment = DepartmentMenu.createDepartment(departments);
-
-                                            selectedWorker.setDepartment(selectedDepartment);
-
-                                            System.out.printf("Novo departamento do trabalhador %s: %s", selectedWorker.getName(), selectedDepartment.getName());
-                                        }
-                                    }
-                                    break;
-                                default:
-
-                                    break;
-                            }
-                        }
-                    } while (selectedWorker == null);
-
-
+                    updateWorkers(workers, departments);
                     break;
+                case 4:
                 default:
                     break;
             }
@@ -172,6 +69,101 @@ public class WorkerMenu {
                 System.out.println();
             }
         }
+    }
+
+    public static void updateWorkers(WorkerRepository workers, DepartmentRepository departments) {
+
+        Scanner sc = new Scanner(System.in);
+
+        Optional<WorkerLevel> optionalWorkerLevel;
+        Optional<Worker> optionalWorker;
+        Department selectedDepartment = null;
+        Worker selectedWorker = null;
+
+        selectedWorker = selectWorker(workers);
+
+        System.out.printf(
+                "Trabalhador selecionado:\n\n%s",
+                selectedWorker.toString()
+        );
+
+        System.out.print(
+                "Qual informação do trabalhador você deseja alterar?"
+        );
+        System.out.println();
+        System.out.println("[1] Nome");
+        System.out.println("[2] Nível");
+        System.out.println("[3] Salário-base");
+        System.out.println("[4] Departamento");
+        System.out.println();
+
+        do {
+            innerOption = sc.nextInt();
+
+            switch (innerOption) {
+                case 1:
+                    System.out.print("Digite o novo nome do trabalhador: ");
+
+                    sc.nextLine();
+                    String name = sc.nextLine();
+
+                    selectedWorker.setName(name);
+
+                    System.out.print(selectedWorker.toString());
+                    break;
+                case 2:
+                    do {
+                        System.out.println("Digite o novo nível do trabalhador de acordo com as opções abaixo:\n");
+                        System.out.println();
+                        listLevels();
+                        System.out.println();
+                        System.out.print("Sua escolha: ");
+
+                        optionalWorkerLevel = WorkerLevel.findByIdentifier(sc.nextInt());
+
+                        if (optionalWorkerLevel.isPresent()) {
+                            selectedWorker.setLevel(optionalWorkerLevel.get());
+                        } else {
+                            System.out.println("Opção não identificada! Tente novamente: ");
+                        }
+                    } while (optionalWorkerLevel.isEmpty());
+                    break;
+                case 3:
+                    System.out.print("Digite o novo salário-base do trabalhador: ");
+                    System.out.println();
+                    Double baseSalary = sc.nextDouble();
+                    selectedWorker.setBaseSalary(baseSalary);
+                    break;
+                case 4:
+                    if (departments.getDepartments().isPresent()) {
+                        selectedDepartment = DepartmentMenu.selectDepartment(departments);
+                        selectedWorker.setDepartment(selectedDepartment);
+                        System.out.printf("Novo departamento do trabalhador %s: %s", selectedWorker.getName(), selectedWorker.getDepartment());
+                    } else {
+                        System.out.println("Não há departamentos cadastrados no sistema!");
+                        System.out.println("Deseja criar um agora?");
+                        System.out.println();
+                        System.out.println("[1] Sim");
+                        System.out.println("[2] Não");
+                        System.out.println();
+                        System.out.println("Sua escolha: ");
+
+                        innerOption = sc.nextInt();
+
+                        if (innerOption == 1) {
+                            selectedDepartment = DepartmentMenu.createDepartment(departments);
+
+                            selectedWorker.setDepartment(selectedDepartment);
+
+                            System.out.printf("Novo departamento do trabalhador %s: %s", selectedWorker.getName(), selectedDepartment.getName());
+                        }
+                    }
+                    break;
+                default:
+                    System.out.print("Opção inválida! Tente novamente: ");
+                    break;
+            }
+        } while (innerOption < 0 || innerOption > 4);
     }
 
     public static void listLevels() {
@@ -206,18 +198,9 @@ public class WorkerMenu {
         if (innerOption == 1) {
             selectedDepartment = DepartmentMenu.createDepartment(departments);
         } else if (innerOption == 2) {
-            do {
-                Optional<Department> optionalDepartment = DepartmentMenu.selectDepartment(departments);
-
-                if (optionalDepartment.isEmpty()) {
-                    System.out.println(
-                            "Departamento não encontrado! Tente novamente"
-                    );
-                } else {
-                    selectedDepartment = optionalDepartment.get();
-                }
-            } while (selectedDepartment == null);
+            selectedDepartment = DepartmentMenu.selectDepartment(departments);
         }
+
         System.out.print("Salário-base: ");
 
         Double baseSalary = sc.nextDouble();
@@ -236,30 +219,45 @@ public class WorkerMenu {
         return worker;
     }
 
-    public static Optional<Worker> selectWorker(WorkerRepository workers) {
+    public static Worker selectWorker(WorkerRepository workers) {
         Scanner sc = new Scanner(System.in);
 
         Optional<Worker> selectedWorker;
-
+        int option;
         String selectedUuid;
 
         System.out.println("Lista de trabalhadores:");
 
-        for (Worker listWorker : workers.getWorkers().get()) {
-            System.out.println(listWorker.toString());
+        if (workers.getWorkers().isPresent()) {
+            listWorkers(workers);
+        } else {
+            System.out.print("Não há trabalhadores cadastrados no sistema! Deseja cadastrar um?");
             System.out.println();
+            System.out.println("[1] Sim");
+            System.out.println("[2] Não");
+            System.out.println();
+            System.out.println("Sua escolha: ");
+
+            option = sc.nextInt();
+
+            if (option == 1) {
+                createWorker(workers);
+            }
         }
 
-        System.out.print(
-                "Selecione um trabalhador para continuar (Digite o UUID)."
-        );
+        System.out.print("Selecione um trabalhador para continuar:");
 
-        selectedUuid = sc.next();
+        selectedWorker = workers.getWorkerByIndex(sc.nextInt());
 
-        selectedWorker = workers.getWorkerById(UUID.fromString(selectedUuid));
+        while (selectedWorker.isEmpty()) {
+            listWorkers(workers);
+            System.out.println();
+            System.out.print("ID inválido! Selecione novamente: ");
+
+            selectedWorker = workers.getWorkerByIndex(sc.nextInt());
+        }
 
         sc.close();
-
-        return selectedWorker;
+        return selectedWorker.get();
     }
 }
