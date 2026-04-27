@@ -5,7 +5,6 @@ import repositories.DepartmentRepository;
 
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class DepartmentMenu {
 
@@ -37,16 +36,17 @@ public class DepartmentMenu {
         System.out.println();
         if (departments.getDepartments().isPresent()) {
             for (Department listDepartment : departments.getDepartments().get()) {
-                System.out.printf("[%d] %s",departmentCounter, listDepartment.toString());
+                System.out.printf("[%d] %s", departmentCounter, listDepartment.toString());
                 System.out.println();
                 departmentCounter++;
             }
         }
     }
 
-    public static Optional<Department> selectDepartment(
+    public static Department selectDepartment(
             DepartmentRepository departments
     ) {
+
         Scanner sc = new Scanner(System.in);
 
         Optional<Department> selectedDepartment;
@@ -55,23 +55,21 @@ public class DepartmentMenu {
 
         System.out.println("Lista de departamentos:");
 
-        for (Department listDepartment : departments.getDepartments().get()) {
-            System.out.println(listDepartment.toString());
+        listDepartments(departments);
+
+        System.out.print("Selecione um departamento para continuar: ");
+
+        selectedDepartment = departments.getDepartmentByIndex(sc.nextInt());
+
+        while (selectedDepartment.isEmpty()) {
+            listDepartments(departments);
             System.out.println();
+            System.out.print("ID inválido! Selecione novamente: ");
+
+            selectedDepartment = departments.getDepartmentByIndex(sc.nextInt());
         }
 
-        System.out.print(
-                "Selecione um departamento para continuar (Digite o UUID)."
-        );
-
-        selectedUuid = sc.next();
-
-        selectedDepartment = departments.getDepartmentById(
-                UUID.fromString(selectedUuid)
-        );
-
         sc.close();
-
-        return selectedDepartment;
+        return selectedDepartment.get();
     }
 }
