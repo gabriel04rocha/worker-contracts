@@ -3,7 +3,7 @@ package views;
 import entities.Department;
 import entities.HourContract;
 import entities.Worker;
-import entities.enums.WorkerLevel;
+import entities.WorkerLevel;
 import repositories.ContractRepository;
 import repositories.DepartmentRepository;
 import repositories.WorkerRepository;
